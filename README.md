@@ -10,6 +10,8 @@ npm install
 npx hardhat test
 ```
 
+There is compressed & uncompressed data files in `./test` dir. The test utilises first 1000 cases and decompresses the bytes and compares it with the uncompressed data.
+
 ### Decompress algo
 The decompression algorithm implemented in the DecompressorContract reconstructs the original Ethereum ABI-encoded data from its compressed form. It processes the compressed data sequentially, performing specific actions based on the evaluation of each byte. The algorithm is optimized for gas efficiency and is capable of handling large datasets.
 
