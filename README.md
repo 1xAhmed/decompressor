@@ -9,6 +9,13 @@ A Solidity smart contract that decompresses compressed ETH-ABI-encoded data, all
 npm install
 npx hardhat test
 ```
+## JS Compress script
+
+To use compress script use `compress` method, import it in your module
+
+```bash
+const { compress } = require('path/to/js/compressor.js');
+```
 
 There is compressed & uncompressed data files in `./test` dir. The test utilises first 1000 cases and decompresses the bytes and compares it with the uncompressed data.
 
