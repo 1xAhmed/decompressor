@@ -2,6 +2,7 @@ const hre = require('hardhat');
 const { ethers } = hre;
 const { loadFixture } = require('@nomicfoundation/hardhat-network-helpers');
 const { ether, expect, trim0x } = require('@1inch/solidity-utils');
+const { compress } = require('../js/compressor.js');
 
 const CALLDATAS_LIMIT = 1000;
 
@@ -21,16 +22,14 @@ describe('Decompressor', function () {
         const { addr1,  addr2, decompressor, chainId } = await initContracts();
 
         let calldatas = {};
-        let compressedDatas = {};
         try {
             calldatas = require('./tx-calldata.json');
-            compressedDatas = require('./compressed-calldata.json');
 
         } catch (e) {
-            console.warn('\x1b[33m%s\x1b[0m', 'Warning: ', 'There is no tx-calldata.json or compressed-calldatas.json');
+            console.warn('\x1b[33m%s\x1b[0m', 'Warning: ', 'There is no tx-calldata.json');
         }
 
-        return { addr1,  addr2, decompressor, chainId, calldatas, compressedDatas };
+        return { addr1,  addr2, decompressor, chainId, calldatas };
     };
 
     describe('Decompress', function () {
@@ -55,17 +54,16 @@ describe('Decompressor', function () {
             });
             expect(ethers.AbiCoder.defaultAbiCoder().decode(['bytes'], decompressedCalldata)).to.deep.eq([calldata]);
         });
-
         it('should decompress calldatas with 1000 cases', async function () {
             if (hre.__SOLIDITY_COVERAGE_RUNNING) { this.skip(); }
-            const { addr1, decompressor, calldatas, compressedDatas } = await loadFixture(initContractsAndLoadCalldatas);
+            const { addr1, decompressor, calldatas } = await loadFixture(initContractsAndLoadCalldatas);
 
             let counter = 0;
             for (const tx in calldatas) {
-                const compressed = compressedDatas[tx];
+                const result = await compress(calldatas[tx]);
                 const decompressedCalldata = await ethers.provider.call({
                     to: decompressor,
-                    data: decompressor.interface.encodeFunctionData('decompressed') + trim0x(compressed),
+                    data: decompressor.interface.encodeFunctionData('decompressed') + trim0x(result.compressedData),
                 });
                 expect(ethers.AbiCoder.defaultAbiCoder().decode(['bytes'], decompressedCalldata)).to.deep.eq([calldatas[tx]]);
                 if (counter++ === CALLDATAS_LIMIT) break;
