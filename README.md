@@ -9,6 +9,13 @@ A Solidity smart contract that decompresses compressed ETH-ABI-encoded data, all
 npm install
 npx hardhat test
 ```
+## JS Compress script
+
+To use compress script use `compress` method, import it in your module
+
+```bash
+const { compress } = require('path/to/js/compressor.js');
+```
 
 ### Decompress algo
 The decompression algorithm implemented in the DecompressorContract reconstructs the original Ethereum ABI-encoded data from its compressed form. It processes the compressed data sequentially, performing specific actions based on the evaluation of each byte. The algorithm is optimized for gas efficiency and is capable of handling large datasets.
